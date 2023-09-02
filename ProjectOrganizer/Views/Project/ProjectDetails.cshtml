@@ -1,0 +1,64 @@
+﻿@{
+    Layout = null;
+}
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <title>Project Details</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+
+        <h1>Project Details</h1>
+        <a href="/project/dashboard">Dashboard</a>
+        <br/><br/>
+
+        @if (ViewBag.Project != null)   // Viewbag.veiwbagKey in Controller
+        {
+            <div class="card" style="width:35rem">
+                <div class="card-body">
+
+                    <div class="row" style="height:2rem">
+                        <div class="col"><b class="mb-0">Project ID</b></div>
+                        <div class="col-sm-8"><a style="color: gray;">@ViewBag.Project.Project_Id</a></div> 
+                        <!-- Viewbag.veiwbagKey in Controller, propertyName in Model -->
+                    </div>
+                    
+                    <div class="row" style="height:2rem">
+                        <div class="col"><b class="mb-0">Project Name</b></div>
+                        <div class="col-sm-8"><a style="color: gray;">@ViewBag.Project.Project_Name</a></div>
+                    </div>
+
+                    <div class="row" style="height:2rem">
+                        <div class="col"><b class="mb-0">Description</b></div>
+                        <div class="col-sm-8"><a style="color: gray;">@ViewBag.Project.Description</a></div>
+                    </div>
+
+                    <div class="row" style="height:2rem">
+                        <div class="col"><b class="mb-0">Created Date</b></div>
+                        <div class="col-sm-8"><a style="color: gray;">@ViewBag.Project.Created_Date</a></div>
+                    </div>
+
+                    <div class="row" style="height:2rem">
+                        <div class="col"><b class="mb-0">Project Status</b></div>
+                        <div class="col-sm-8">
+                            @if (ViewBag.Project.Project_Status == true)
+                            {
+                                <a style="color: gray;">In Progress</a>
+                            }   
+                            else
+                            {
+                                <a style="color: gray;">Finished</a>
+                            }
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>   
+        }
+
+    </div>
+</body>
