@@ -8,6 +8,7 @@ namespace ProjectOrganizer.Controllers
     public class ProjectController : Controller
     {
         private readonly IProject _projectInterface;
+        private readonly IModel _modelInterface;
         private readonly IConfiguration _configuration;
         public static string connectionString;
 
@@ -19,8 +20,8 @@ namespace ProjectOrganizer.Controllers
             connectionString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection");  // from appsettings.json
         }
 
-        // View Dashboard /////////////////////////////////////////////////////////////////////////////////////////
-        // IActionResult - return page or action (Controller to View), need to return
+        //////////////////// View Dashboard /////////////////////////////////////////////////////////////////////////////////////////
+            // IActionResult - return page or action (Controller to View), need to return
         public IActionResult Dashboard()
         {
             // show project list - create list and pass to view
@@ -29,8 +30,8 @@ namespace ProjectOrganizer.Controllers
             ViewBag.ProjectList = projectList;  // ViewBag.viewbagKey = viewbagValue
             return View();
         }
-        
-        // Create New Project /////////////////////////////////////////////////////////////////////////////////////
+
+        //////////////////// Create New Project /////////////////////////////////////////////////////////////////////////////////////
         // need 2 methods for form submission
         // 1) go to form page
         public IActionResult CreateProject() 
@@ -39,9 +40,9 @@ namespace ProjectOrganizer.Controllers
         }
 
         // 2) after submission, go to another page
-        // need model binding to send object (connect with form and page)
-            // parameter's data type -> modelName
-            // ** why need data binding -> submit form as an object
+            // need model binding to send object (connect with form and page)
+                // parameter's data type -> modelName
+                // ** why need data binding -> submit form as an object
         [HttpPost]
         public IActionResult CreateProject(Project projectForm) 
         {
@@ -56,27 +57,35 @@ namespace ProjectOrganizer.Controllers
              // projectList.Add(newProject);
              // List index 0 - newProject obj1, index 1 - newProject obj2 
 
-            _projectInterface.CreateNewProject(connectionString, newProject);
+            bool check = _projectInterface.CreateNewProject(connectionString, newProject);
 
             return RedirectToAction("Dashboard", "Project");    // go to another page after form submission
             // for controller to work - go to controller first
             // (controllerMethod, controllerName)
         }
 
-        // Get Project by Id /////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////// Get Project Details /////////////////////////////////////////////////////////////////////////////////////////
         public IActionResult GetProjectById(int id)
         {
             Project project = _projectInterface.GetProjectById(connectionString, id);
+            List<Model> models = _modelInterface.GetAllModelsByProjectId(connectionString, id);
+
             if (project != null) {
                 ViewBag.Project = project;  // Project => name (key), project => data (value)
+
+                if (models != null) 
+                { 
+                    ViewBag.Models = models;
+                }
+
                 return View("ProjectDetails");  // need this () if page name is different with controller method
             }
             return RedirectToAction("Dashboard", "Project");
 
         }
 
-        // Update Project /////////////////////////////////////////////////////////////////////////////////////////
-        // need 2 methods 
+        //////////////////// Update Project /////////////////////////////////////////////////////////////////////////////////////////
+            // need 2 methods 
 
         public IActionResult UpdateProject(int id) {
             Project project = _projectInterface.GetProjectById(connectionString, id);
@@ -94,7 +103,7 @@ namespace ProjectOrganizer.Controllers
             return RedirectToAction("GetProjectById", "Project", new { id = projectForm.Project_Id });
         }
 
-        // Delete Project /////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////// Delete Project /////////////////////////////////////////////////////////////////////////////////////////
 
         public IActionResult DeleteProjectById(int id)
         {

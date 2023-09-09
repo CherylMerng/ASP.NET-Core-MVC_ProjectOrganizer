@@ -20,6 +20,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>No</th>
                         <th>ID</th>
                         <th>Project Name</th>
                         <th>Status</th>
@@ -31,8 +32,9 @@
                     @if (ViewBag.ProjectList != null)   // ViewBag.viewbagKey in Controller
                     {
                         @foreach (var pl in ViewBag.ProjectList)    
-                        {   
-                            <tr>
+                        {
+                            
+                            <tr>                                
                                 <td>@pl.Project_Id</td> <!-- propertyName in Model -->
                                 <td><a href="/project/getprojectbyid/@pl.Project_Id">@pl.Project_Name</a></td>
                                 <td>

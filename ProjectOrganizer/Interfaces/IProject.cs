@@ -4,6 +4,8 @@ namespace ProjectOrganizer.Interfaces
 {
     // controller <-> interface <-> repository <-> database
     // create constructor in controller to use interface
+
+    // 1. To use interface -> copy method from repo
     public interface IProject
     {
         public bool CreateNewProject(string connectionString, Project newProject);

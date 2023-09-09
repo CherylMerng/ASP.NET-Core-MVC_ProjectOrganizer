@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using ProjectOrganizer.Interfaces;
-using ProjectOrganizer.Models.Project;
+using ProjectOrganizer.Models.Project;  // 2. To use interface -> implement
 using ProjectOrganizer.Utilities;
 using System.Collections.Generic;
 using System.Data;
@@ -11,6 +11,7 @@ namespace ProjectOrganizer.Repositories
     // controller <-> interface <-> repository <-> database
     // repo - access db, CRUD db table
 
+    // 2. To use interface -> implement
     public class ProjectRepository : IProject
     {
         public bool CreateNewProject(string connectionString, Project newProject)

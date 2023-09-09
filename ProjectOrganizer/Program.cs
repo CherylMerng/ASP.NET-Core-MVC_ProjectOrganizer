@@ -3,9 +3,11 @@ using ProjectOrganizer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 3. To use interface -> dependency injection
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IProject, ProjectRepository>();
+builder.Services.AddScoped<IModel, ModelRepository>();
 
 var app = builder.Build();
 
