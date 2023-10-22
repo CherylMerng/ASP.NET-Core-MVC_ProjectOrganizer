@@ -3,6 +3,7 @@ using ProjectOrganizer.Interfaces;
 using ProjectOrganizer.Models.Project;
 using System.Data;
 using System.Data.SqlClient;
+using System.Numerics;
 
 namespace ProjectOrganizer.Repositories
 {
@@ -15,7 +16,7 @@ namespace ProjectOrganizer.Repositories
                 var procedure = "Properties_StoredProcedures";
                 var parameters = new
                 {
-                    Property_Id = 0,
+                    PropertyId = 0,
                     PropertyName = newProperty.Property_Name,
                     DataType = newProperty.Data_Type,
                     AccessModifier = newProperty.Access_Modifier,
@@ -25,9 +26,10 @@ namespace ProjectOrganizer.Repositories
                     Process = "CreateProperty"
                 };
 
+                // Execute => return true (1) or false (0)
                 try
                 {
-                    connection.Execute(procedure, parameters, commandType: CommandType.StoredProcedure);
+                    var check = connection.Execute(procedure, parameters, commandType: CommandType.StoredProcedure);
                     return true;
                 }
                 catch (Exception ex)
@@ -43,7 +45,7 @@ namespace ProjectOrganizer.Repositories
         {
             using (var connection = new SqlConnection(connectionString))
             {
-                var procedure = "Models_StoredProcedures";
+                var procedure = "Properties_StoredProcedures";
                 var parameters = new
                 {
                     PropertyId = 0,
@@ -53,7 +55,7 @@ namespace ProjectOrganizer.Repositories
                     Description = "",
                     ModelId = modelId,
 
-                    Process = "GetPropertiesByModelId"
+                    Process = "GetAllPropertiesByModelId"
                 };
 
                 try
@@ -70,5 +72,99 @@ namespace ProjectOrganizer.Repositories
             }
 
         } // GetAllPropertiesByModelId
+
+        public Property GetLatestPropertyByModelId(string connectionString, int modelId)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var procedure = "Properties_StoredProcedures";
+                var parameters = new
+                {
+                    PropertyId = 0,
+                    PropertyName = "",
+                    DataType = "",
+                    AccessModifier = "",
+                    Description = "",
+                    ModelId = modelId,
+
+                    Process = "GetLatestProperty"
+                };
+
+                try
+                {
+                    Property result = connection.QuerySingle<Property>(procedure, parameters, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return null;
+                }
+            }
+
+        } // GetLatestPropertyByModelId
+
+        public int DeletePropertyById(string connectionString, int propertyId)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var procedure = "Properties_StoredProcedures";
+                var parameters = new
+                {
+                    PropertyId = propertyId,
+                    PropertyName = "",
+                    DataType = "",
+                    AccessModifier = "",
+                    Description = "",
+                    ModelId = "",
+
+                    Process = "DeletePropertyById"
+                };
+
+                try
+                {
+                    int check = connection.Execute(procedure, parameters, commandType: CommandType.StoredProcedure);
+                    return check;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return 0;
+                }
+            }
+
+        }   // DeletePropertyById
+
+        public Property GetPropertyById(string connectionString, int propertyId)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var procedure = "Properties_StoredProcedures";
+                var parameters = new
+                {
+                    PropertyId = propertyId,
+                    PropertyName = "",
+                    DataType = "",
+                    AccessModifier = "",
+                    Description = "",
+                    ModelId = 0,
+
+                    Process = "GetPropertyById"
+                };
+
+                try
+                {
+                    Property result = connection.QuerySingle<Property>(procedure, parameters, commandType: CommandType.StoredProcedure);
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    return null;
+                }
+            }
+
+        } // GetPropertyById
+
     }
 }

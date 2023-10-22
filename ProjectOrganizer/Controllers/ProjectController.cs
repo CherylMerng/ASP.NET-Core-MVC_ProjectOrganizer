@@ -13,9 +13,10 @@ namespace ProjectOrganizer.Controllers
         public static string connectionString;
 
         // Constructor
-        public ProjectController (IProject projectInterface, IConfiguration configuration)
+        public ProjectController (IProject projectInterface, IModel modelInterface, IConfiguration configuration)
         {
             _projectInterface = projectInterface;
+            _modelInterface = modelInterface;
             _configuration = configuration;
             connectionString = _configuration.GetValue<string>("ConnectionStrings:DefaultConnection");  // from appsettings.json
         }

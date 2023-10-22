@@ -1,0 +1,222 @@
+﻿@model ProjectOrganizer.Models.Project.Property;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    @*Ajax Library*@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Manage Properties</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+
+        <h1>Manage Properties</h1>
+
+        <a href="/project/dashboard">Dashboard</a>
+
+        <br /><br /><br />
+
+        @* <form asp-action="ManageProperties" method="post"> *@
+
+            <div class="card" style="width:100%">
+                <div class="card-body">
+
+                    <div class="row" style="height:2rem; padding-bottom:3rem;">
+
+                        <input id="modelId" value="@ViewBag.ModelId" hidden />
+
+                        <div class="col-sm-2">
+                            <input id="propertyName" type="text" placeholder="Property Name" style="width:100%" />
+                        </div> 
+                        <div class="col-sm-2">                            
+                            <select id="dataType" style="width:100%; height:2rem;">
+                                <option value="" hidden>Data Type</option>
+                                <option value="bool">Boolean</option>
+                                <option value="int">Integer</option>
+                                <option value="float">Float</option>
+                                <option value="double">Double</option>
+                                <option value="string">String</option>
+                                <option value="char">Character</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select id="accessModifier" style="width:100%; height: 2rem;">
+                                <option value="" hidden><p style="color: gray;">Access Modifier</p></option>
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                                <option value="protected">Protected</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-5">
+                            <input id="description" type="text" placeholder="Description" style="width:100%" />
+                        </div>
+                        <div class="col" style="width: 10%">
+                            <button class="btn btn-sm btn-primary" onclick="addProperty()" type="submit">Add</button>
+                        </div>
+
+                    </div>
+
+                </div> <!-- card body -->
+            </div> <!-- card -->
+
+        <br />
+
+        <div class="card" style="width:100%">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Property Name</th>
+                        <th>Data Type</th>
+                        <th>Access Modifier</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @if (ViewBag.Properties != null)
+                    {
+                        foreach (var p in ViewBag.Properties)
+                        {
+                            <tr>
+                                <td>@p.Property_Name</td>
+                                <td>@p.Data_Type</td>
+                                <td>@p.Access_Modifier</td>
+                                <td>@p.Description</td>
+                                <td>
+                                    <button id="deleteProperty" class="btn btn-sm btn-secondary" onclick="deleteProperty(@p.Property_Id)">Delete</button>
+                                </td>
+                            </tr>    
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>  <!-- card -->
+
+
+    </div> <!-- container-fluid -->
+
+</body>
+
+<script>
+
+    function addProperty() { 
+
+        var propName = document.getElementById("propertyName");
+        var dType = document.getElementById("dataType");
+        var assModifier = document.getElementById("accessModifier");
+        var description = document.getElementById("description");
+        var modelId = document.getElementById("modelId");
+        
+        // Ajax sends formData to Controller (Add new property)
+        // Controller send json response (Property obj)
+
+        // creates object as a form to be transferred to controller using Ajax
+        let formData = {    // object in javascript = Property object
+            property_name: propName.value,  // key = property name in property model : value
+            data_type: dType.value,
+            access_modifier: assModifier.value,
+            description: description.value,
+            model_Id: modelId.value
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddNewProperty", "Property")",
+            data: formData,
+            success: function (response) { 
+                if (response != null) {
+
+                    // alert(response.property_Name);
+
+                    let table = document.getElementById("tableBody");
+                    let row = table.insertRow(-1);  // -1 = last index
+                    // pos index [0,1,2,...] neg index [...,-3,-2,-1]
+
+                    let c1 = row.insertCell(0);
+                    let c2 = row.insertCell(1);
+                    let c3 = row.insertCell(2);
+                    let c4 = row.insertCell(3);
+                    let c5 = row.insertCell(4);
+                    c1.innerText = response.property_Name;   // response = Property object from controller (lastestProperty)
+                    c2.innerText = response.data_Type;    // response.key = response.property_name => get value
+                    c3.innerText = response.access_Modifier;
+                    c4.innerText = response.description;
+
+                    const button = document.createElement('button'); // create a button
+                    button.id = 'deleteProperty';                    // set button id
+                    button.textContent = 'Delete';                   // set text content
+                    $(button).addClass('btn btn-sm btn-secondary');  // set onclick func
+                        // $("#table") = document.getElementById(table)
+                        // addClass() = jQuery function/ method
+                    button.addEventListener('click', function () { 
+                        deleteProperty(response.property_Id);
+                    });
+                    c5.appendChild(button);
+                }
+            },
+            error: function () {
+                alert(request.responseText);
+            }
+        })
+    }
+
+    // send data from Ajax to controller => with Json file
+    function deleteProperty(propertyId) {   // propertyId = parameter name
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("DeleteProperty", "Property")",
+            data: {id: propertyId}  // propertyId = parameter name
+,
+            success: function (response) {  // response = array list
+                if (response != null) {
+                    alert(response.length); // length = count
+                    // var tableBody = document.getElementById("propertiesTable");
+                    $("#tableBody").empty();   // jQuery
+
+                    var propertiesTable = document.getElementById("tableBody");
+
+                    response.forEach(obj => {  // for each => each object in object list or array length
+                        // obj = each object in array list "response"
+                        let row = tableBody.insertRow(-1);
+                        let c1 = row.insertCell(0);
+                        let c2 = row.insertCell(1);
+                        let c3 = row.insertCell(2);
+                        let c4 = row.insertCell(3);
+                        let c5 = row.insertCell(4);
+                        c1.innerText = obj.property_Name;
+                        c2.innerText = obj.data_Type;
+                        c3.innerText = obj.access_Modifier;
+                        c4.innerText = obj.description;
+
+                        const button = document.createElement('button');
+                        button.id = 'deleteProperty';
+                        button.textContent = 'Delete';
+                        $(button).addClass('btn btn-sm btn-secondary');
+                        button.addEventListener('click', function () {
+                            deleteProperty(obj.property_Id);
+                        });
+                        c5.appendChild(button);
+                        
+                    });
+
+                }
+            },
+            error: function () {
+                alert(request.responseText);
+            }
+        })
+
+    }
+
+
+</script>
+
+</html>
